@@ -40,7 +40,7 @@ services:
       - server__port=2368
       - imageOptimization__resize=false
     volumes:
-      - ./ghostpi/content:/var/lib/ghost/content
+      - ./[BLOG ONE]/content:/var/lib/ghost/content
     depends_on:
       - letsencrypt
 
@@ -56,7 +56,7 @@ services:
       - server__port=2369
       - imageOptimization__resize=false
     volumes:
-      - ./simplyarcher/content:/var/lib/ghost/content
+      - ./[BLOG TWO]/content:/var/lib/ghost/content
     depends_on:
       - letsencrypt
 
