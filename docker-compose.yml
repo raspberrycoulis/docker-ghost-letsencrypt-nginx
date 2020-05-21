@@ -1,0 +1,66 @@
+version: '3.5'
+services:
+  letsencrypt:
+    image: linuxserver/letsencrypt
+    restart: unless-stopped
+    container_name: letsencrypt
+    networks:
+      - ghost-blogs
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+      - URL=${FIRST_DOMAIN}
+      - VALIDATION=dns
+      - DNSPLUGIN=cloudflare
+      - EMAIL=${LE_EMAIL}
+      - DHLEVEL=2048 # Default is 2048
+      - ONLY_SUBDOMAINS=false #optional
+      - EXTRA_DOMAINS=${SECOND_DOMAIN}
+      - STAGING=false #optional
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./letsencrypt/config:/config
+      - ./cloudflare.ini:/config/dns-conf/cloudflare.ini:ro
+      - ./default:/config/nginx/site-confs/default
+
+  ghost-ghostpi:
+    image: ghost:alpine
+    restart: unless-stopped
+    container_name: [BLOG ONE]
+    networks:
+      - ghost-blogs
+    environment:
+      - url=https://${FIRST_DOMAIN}
+      - server__host=0.0.0.0
+      - server__port=2368
+      - imageOptimization__resize=false
+    volumes:
+      - ./ghostpi/content:/var/lib/ghost/content
+    depends_on:
+      - letsencrypt
+
+  ghost-simplyarcher:
+    image: ghost:alpine
+    restart: unless-stopped
+    container_name: [BLOG TWO]
+    networks:
+      - ghost-blogs
+    environment:
+      - url=https://${SECOND_DOMAIN}
+      - server__host=0.0.0.0
+      - server__port=2369
+      - imageOptimization__resize=false
+    volumes:
+      - ./simplyarcher/content:/var/lib/ghost/content
+    depends_on:
+      - letsencrypt
+
+networks:
+  ghost-blogs:
+    driver: bridge
+    name: ghost-blogs
