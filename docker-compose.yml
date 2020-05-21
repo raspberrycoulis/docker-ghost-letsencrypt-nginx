@@ -28,7 +28,7 @@ services:
       - ./cloudflare.ini:/config/dns-conf/cloudflare.ini:ro
       - ./default:/config/nginx/site-confs/default
 
-  ghost-ghostpi:
+  ghost-[BLOG ONE]:
     image: ghost:alpine
     restart: unless-stopped
     container_name: [BLOG ONE]
@@ -44,7 +44,7 @@ services:
     depends_on:
       - letsencrypt
 
-  ghost-simplyarcher:
+  ghost-[BLOG TWO]:
     image: ghost:alpine
     restart: unless-stopped
     container_name: [BLOG TWO]
